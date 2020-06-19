@@ -54,15 +54,16 @@ def train_func(config):
                                                                       'checkpoint')))
     if ckpt and ckpt.model_checkpoint_path:
         saver = tf.train.Saver(max_to_keep=1000)
-        saver.restore(sess, ckpt.model_checkpoint_path)
+        # saver.restore(sess, ckpt.model_checkpoint_path)
+        saver.restore(sess, tf.train.latest_checkpoint(ckpt.model_checkpoint_path))
         step = int(ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1])+1
         sess.run(tf.assign(global_step, step))
-        print 'Model Loaded'
+        print('Model Loaded')
 
     else:
         if 'intialize' in config:
             reader = tf.train.NewCheckpointReader(config['intialize'])
-            var_str = reader.debug_string()
+            var_str = reader.debug_string().decode("utf-8")
             name_var = re.findall('[A-Za-z0-9/:_]+ ', var_str)
             import_variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
             initialize_variables = {} 
@@ -72,7 +73,7 @@ def train_func(config):
 
             saver = tf.train.Saver(initialize_variables)
             saver.restore(save_path=config['intialize'], sess=sess)
-            print 'Pretrained Intialization'
+            print('Pretrained Intialization')
         saver = tf.train.Saver(max_to_keep=1000)
        
     while 1:
@@ -97,23 +98,23 @@ def train_func(config):
 
                 t0 = datetime.datetime.now()
                 total_loss /= config['skip_step']
-                print '%s %s] Step %s, lr = %f ' \
+                print('%s %s] Step %s, lr = %f ' \
                   % (str(datetime.datetime.now()), str(os.getpid()), step,
-                     model.lr.eval(session=sess))
-                print '\t loss = %.4f' % (total_loss)
-                print '\t estimated time left: %.1f hours. %d/%d' % (left_hours, step,
-                                                                     config['max_iteration'])
-                print '\t', config['model']
+                     model.lr.eval(session=sess)))
+                print ('\t loss = %.4f' % (total_loss))
+                print ('\t estimated time left: %.1f hours. %d/%d' % (left_hours, step,
+                                                                     config['max_iteration']))
+                print ('\t', config['model'])
                 total_loss = 0.0
 
             step += 1
             if step > config['max_iteration']:
                 saver.save(sess, os.path.join(config['checkpoint'], 'model.ckpt'), step-1)
-                print 'training_completed'
+                print('training_completed')
                 break
 
         except tf.errors.OutOfRangeError:
-            print 'Epochs in dataset repeat < max_iteration'
+            print('Epochs in dataset repeat < max_iteration')
             break
 
 def main():
@@ -122,7 +123,7 @@ def main():
         file_address = open(args.config)
         config = yaml.load(file_address)
     else:
-        print '--config config_file_address missing'
+        print('--config config_file_address missing')
     train_func(config)
 
 if __name__ == '__main__':

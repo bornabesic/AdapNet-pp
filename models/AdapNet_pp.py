@@ -13,7 +13,7 @@
  GNU General Public License for more details.'''
 
 import tensorflow as tf
-import network_base
+from . import network_base
 class AdapNet_pp(network_base.Network):
     def __init__(self, num_classes=12, learning_rate=0.001, float_type=tf.float32, weight_decay=0.0005,
                  decay_steps=30000, power=0.9, training=True, ignore_label=True, global_step=0,
@@ -159,7 +159,7 @@ class AdapNet_pp(network_base.Network):
             self._create_loss(label)
 
 def main():
-    print 'Do Nothing'
+    print('Do Nothing')
    
 if __name__ == '__main__':
     main()
