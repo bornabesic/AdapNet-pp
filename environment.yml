@@ -1,0 +1,13 @@
+name: app
+channels:
+  - defaults
+dependencies:
+  - python=3.6
+  - cudatoolkit=9.0
+  - cudnn=7.1.2
+  - tensorflow-gpu=1
+  - pillow
+  - tqdm
+  - opencv=4
+  - pyyaml
+
